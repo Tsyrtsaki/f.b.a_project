@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <!-- setup information from: https://leafletjs.com/-->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+        crossorigin=""></script>
+
+        <!-- script for reading the berry_data.json-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <!-- styling -->
+        <style>
+            h1 {
+                font-family: 'Courier New', monospace;
+                color: rgb(74, 72, 228)
+            }
+
+            #map { 
+                height: 700px;
+                width: 700px;    
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>The Berry Map</h1>
+
+        <!-- the berry data has data between weeks 21-41 and between years 2018-2022 -->
+        <div>
+            <input type="number" id="week" placeholder="Week" min="21" max="41">
+            <input type="number" id="year" placeholder="Year" min="2018" max="2022">
+            
+            <button onclick="buttonsearch()" id="search">Search</button>
+            <button onclick="buttonclear()" id="clear">Clear</button>
+        </div><br>
+    
+
+        <div id="map"></div>
+
+
+
+        <!-- SCRIPTS -->
+        <script>
+            // coordinates for center of Finland, 5 is the initial zoom level
+            var map = L.map("map").setView([65.00, 26.00], 5);
+
+            
+            // adding the tile layer, info from leafletjs.com
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+
+            // json berry_data
+            let berry_data = [];
+            $.getJSON('./berry_data.json', function (data) {
+                berry_data = data;
+            });   
+            
+                
+
+            // MAP MARKER FUNCTION
+
+            function map_marker(year, week) {
+            
+        
+            // filter the results by year and week
+
+            let week_year_filter = berry_data.filter(item => {
+            return item.year === year && item.week_number === week
+            });
+
+
+            // save info into variables and "push" markers on the map with selected popuptext
+
+            for (var i = 0; i < week_year_filter.length; i++) {
+                var latitude = week_year_filter[i].Latitude;
+                var longitude = week_year_filter[i].Longitude;
+                var main_tree = week_year_filter[i].main_tree_type;
+                var forest_type = week_year_filter[i].forest_development_class;
+                var berry_type = week_year_filter[i].berry;
+                var week = week_year_filter[i].week_number;
+                var year = week_year_filter[i].year;
+                var coordinates = week_year_filter[i].Coordinates;
+
+                var markerLocation = new L.LatLng(latitude, longitude);
+                var marker = new L.Marker(markerLocation);
+                map.addLayer(marker);
+
+                marker.bindPopup(
+                    "Berry type - "  + berry_type + "<br>" +
+                    "Forest Development Class - " + forest_type + "<br>" +
+                    "Week - " + week + ", " + "Year - " + year + "<br>" +
+                    "Coordinates - " + latitude + ", " + longitude);
+            }
+        }
+
+        function buttonsearch() {
+            var week = Number(document.getElementById("week").value);
+            var year = Number(document.getElementById("year").value);
+            
+            map_marker(year, week);
+        }
+
+        function buttonclear(){
+            $(".leaflet-marker-icon").remove(); $(".leaflet-popup"); $(".leaflet-pane.leaflet-shadow-pane").remove();
+        }
+
+        </script>
+
+    </body>
+
+</html>
