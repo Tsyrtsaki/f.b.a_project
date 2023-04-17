@@ -50,32 +50,22 @@ body {
     width: 100%;
     height: auto;
 }
-/* Define styles for parallax scrolling */
-.parallax-section {
-    height: 100vh;
-    overflow: auto;
-    position: relative; 
+
+h1, p {
+    font-family: 'Arial';
+    color: #fff
 }
 
-/* Parralax background */
-.parallax-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    /* Position of the content on the background */
-    z-index: -1; 
+h4 {
+    font-size: 45px;
+    color: #fff;
+
 }
-
-
 
 /* Styling for main banner of website */
 .banner {
     background-color: rgba(44, 76, 59, 0.7);
-    /*opacity: 0.7;*/
+
     text-align: center;
     margin-top: 11.5%;
     position: relative;
@@ -88,8 +78,6 @@ body {
 }
 
 #map { 
-    /*height: 940px;
-    width: 940px;*/
     height: 32vh;
     width: 32vh;
 
@@ -108,20 +96,19 @@ body {
 border-radius: 1em;
 background-color: rgba(44, 76, 59, 0.7);
 border: 0;
-/*opacity: .7;*/
 max-width: 60%;
 padding: 2%;
 margin-left: 20.65%;
 margin-right: 22%;
 margin-top: 12%;
 padding-top: 0%;
+margin-bottom: 16%;
 }
 
 
 /* Styling for left side information box */
 .right_1, .right_2, .right_3 {
     background-color: rgba(44, 76, 59, 0.7);
-            /*opacity: 0.7;*/
             width: 56%;
             height: auto;
 			padding: 3%;
@@ -141,7 +128,6 @@ padding-top: 0%;
 /* Styling for right side information box */
 .left_1, .left_2, .left_3 {
     background-color: rgba(44, 76, 59, 0.7);
-            /*opacity: .7;*/
             width: 56%;
             height: auto;
 			padding: 3%;
@@ -156,13 +142,76 @@ padding-top: 0%;
 
 }
 
-h1, p {
-    font-family: 'Arial';
-    color: #fff
-}
-
-h4 {
-    font-size: 45px;
-    color: #fff;
+#sdg_values {
+    position: relative;
+    top: -28.5vh;
+    left: 59vh;
 
 }
+
+#berry_chart {
+    width: 40vh;
+    height: 25vh;
+    position: relative;
+    top: -27vh;
+
+}
+
+.user-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .user-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color:#455b55;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    width: 200px;
+    max-width: 400px;
+  }
+  
+  .user-image {
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+    position: relative;
+  }
+  
+  .user-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+  
+  .user-info {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .user-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+  }
+  .user-position {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  .user-quote {
+    font-size: 15px;
+    margin: 0;
+  }
+  
