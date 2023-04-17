@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Finnish berry analysis</title>
+        <link href="styles.css" rel="stylesheet" type="text/css" media="screen"/>
+
+        <!-- setup information from: https://leafletjs.com/-->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+        crossorigin=""></script>
+
+        <!-- script for reading the berry_data.json-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    </head>
+    <body>
+        
+        <div class="banner">
+            <h1>Finnish Berry Analysis</h1>
+        </div>
+        
+
+        <div class="right_1">
+            <div class="col-6 col-s-12 menu">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                 Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                  irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat 
+                  cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+            </div>
+        </div>
+
+        <div class="left_1">
+            <div class="col-6 col-s-12 menu">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                 Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+                  dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+                   non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+            </div>
+        </div>
+        <div class="right_2">
+            <div class="col-6 col-s-12 menu">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                     Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                      irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat 
+                      cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+            </div>
+        </div>
+
+        <div class="berry_map">
+                        
+
+            <h4>The Berry Map</h4>
+
+            <!-- the berry data has data between weeks 21-41 and between years 2018-2022 -->
+            <div>
+                <input type="number" id="week" placeholder="Week" min="21" max="41">
+                <input type="number" id="year" placeholder="Year" min="2018" max="2022">
+                
+                <button onclick="buttonsearch()" id="search">Show Berries</button>
+    
+            </div><br>
+    
+            <!-- Year search button -->
+            <div>
+                <input type="number" id="year_only" placeholder="Year" min="2018" max="2022">
+                <button onclick="buttonsearch_year()" id="search">Show Berries</button>
+            </div><br>
+    
+            <div>
+                <button onclick="button_weather_stations()" id="weather_station">Show Weather Stations</button>
+                <button onclick="buttonclear_stations()" id="clear_stations">Clear Weather Stations</button>
+            </div><br>
+    
+            <!-- refresh the map, (delete and remake) -->
+            <div>
+                <button onclick="buttonrefresh()" id="clear">Refresh Map</button>
+            </div><br>
+        
+            <!-- placeholder for the leaflet map, has Layer OpenTopoMap-->
+            <div id="map"></div>
+            
+            <script>
+          
+          
+
+// coordinates for center of Finland, 5 is the initial zoom level
+var map = L.map("map").setView([65.00, 26.00], 5);
+
+            
+//topo map
+// https://wiki.openstreetmap.org/wiki/OpenTopoMap
+L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+attribution: `Kartendaten: © OpenStreetMap-Mitwirkende, SRTM 
+                      | Kartendarstellung: © OpenTopoMap (CC-BY-SA)`
+}).addTo(map);
+
+
+// json berry_data
+let berry_data = [];
+$.getJSON('./berry_data.json', function (data) {
+    berry_data = data;
+});   
+
+// show coordinates on click
+
+
+
+// MAP MARKER FUNCTIONS
+
+function map_marker(year, week) {
+
+// filter the results by year and week
+// ref: https://stackoverflow.com/questions/65111615/leaflet-marker-filtering
+
+let week_year_filter = berry_data.filter(item => {
+return item.year === year && item.week_number === week
+});
+
+
+// save info into variables and "push" markers on the map with selected popuptext
+// ref: https://harrywood.co.uk/maps/examples/leaflet/marker-array.view.html
+
+for (var i = 0; i < week_year_filter.length; i++) {
+    var latitude = week_year_filter[i].Latitude;
+    var longitude = week_year_filter[i].Longitude;
+    var main_tree = week_year_filter[i].main_tree_type;
+    var forest_type = week_year_filter[i].forest_development_class;
+    var berry_type = week_year_filter[i].berry;
+    var week = week_year_filter[i].week_number;
+    var year = week_year_filter[i].year;
+    var coordinates = week_year_filter[i].Coordinates;
+
+    var markerLocation = new L.LatLng(latitude, longitude);
+
+    // if condition for different colors for different berries
+
+    if (berry_type == "bilberry") {
+
+    // bilberry = blue, weight: 12 for bigger outline
+        var marker = new L.circle(markerLocation, {
+    color: "blue",
+    weight: 8,
+    radius: 200               
+    });
+    map.addLayer(marker);
+
+    marker.bindPopup(
+        "Berry type - "  + berry_type + "<br>" +
+        "Forest Development Class - " + forest_type + "<br>" +
+        "Week - " + week + ", " + "Year - " + year + "<br>" +
+        "Coordinates - " + latitude + ", " + longitude);
+
+    // lingonberry = red
+    } else if (berry_type == "lingonberry") {              
+        var marker = new L.circle(markerLocation, {
+    color: "red",
+    weight: 8,
+    radius: 250                
+    });
+    map.addLayer(marker);
+
+    marker.bindPopup(
+        "Berry type - "  + berry_type + "<br>" +
+        "Forest Development Class - " + forest_type + "<br>" +
+        "Week - " + week + ", " + "Year - " + year + "<br>" +
+        "Coordinates - " + latitude + ", " + longitude);
+
+    // cloudberry = orange
+    } else {
+        var marker = new L.circle(markerLocation, {
+    color: "orange",
+    weight: 8,
+    radius: 300                
+    });
+    map.addLayer(marker);
+
+    marker.bindPopup(
+        "Berry type - "  + berry_type + "<br>" +
+        "Forest Development Class - " + forest_type + "<br>" +
+        "Week - " + week + ", " + "Year - " + year + "<br>" +
+        "Coordinates - " + latitude + ", " + longitude);
+    }
+}
+}
+
+// FUNCTION TO SHOW ALL BERRIES ON A SINGLE YEAR
+
+function map_marker_year(year) {
+
+// filter the results by year and week
+// ref: https://stackoverflow.com/questions/65111615/leaflet-marker-filtering
+
+let week_year_filter = berry_data.filter(item => {
+return item.year === year 
+});
+
+
+// save info into variables and "push" markers on the map with selected popuptext
+// ref: https://harrywood.co.uk/maps/examples/leaflet/marker-array.view.html
+
+for (var i = 0; i < week_year_filter.length; i++) {
+    var latitude = week_year_filter[i].Latitude;
+    var longitude = week_year_filter[i].Longitude;
+    var main_tree = week_year_filter[i].main_tree_type;
+    var forest_type = week_year_filter[i].forest_development_class;
+    var berry_type = week_year_filter[i].berry;
+    var week = week_year_filter[i].week_number;
+    var year = week_year_filter[i].year;
+    var coordinates = week_year_filter[i].Coordinates;
+
+    var markerLocation = new L.LatLng(latitude, longitude);
+
+    // if condition for different colors for different berries
+    if (berry_type == "bilberry") {
+
+    // bilberry = blue, weight: 12 for bigger outline
+        var marker = new L.circle(markerLocation, {
+    color: "blue",
+    weight: 8,
+    radius: 200               
+    });
+    map.addLayer(marker);
+
+    marker.bindPopup(
+        "Berry type - "  + berry_type + "<br>" +
+        "Forest Development Class - " + forest_type + "<br>" +
+        "Week - " + week + ", " + "Year - " + year + "<br>" +
+        "Coordinates - " + latitude + ", " + longitude);
+
+    // lingonberry = red
+    } else if (berry_type == "lingonberry") {              
+        var marker = new L.circle(markerLocation, {
+    color: "red",
+    weight: 8,
+    radius: 250                
+    });
+    map.addLayer(marker);
+
+    marker.bindPopup(
+        "Berry type - "  + berry_type + "<br>" +
+        "Forest Development Class - " + forest_type + "<br>" +
+        "Week - " + week + ", " + "Year - " + year + "<br>" +
+        "Coordinates - " + latitude + ", " + longitude);
+
+    // cloudberry = orange
+    } else {
+        var marker = new L.circle(markerLocation, {
+    color: "orange",
+    weight: 8,
+    radius: 300                
+    });
+    map.addLayer(marker);
+
+    marker.bindPopup(
+        "Berry type - "  + berry_type + "<br>" +
+        "Forest Development Class - " + forest_type + "<br>" +
+        "Week - " + week + ", " + "Year - " + year + "<br>" +
+        "Coordinates - " + latitude + ", " + longitude);
+    }
+}
+}
+
+function buttonsearch() {
+var week = Number(document.getElementById("week").value);
+var year = Number(document.getElementById("year").value);
+
+map_marker(year, week);
+}
+
+function buttonsearch_year() {
+var year = Number(document.getElementById("year_only").value);
+
+map_marker_year(year);
+}
+
+// refresh the map
+// ref: https://stackoverflow.com/questions/19186428/refresh-leaflet-map-map-container-is-already-initialized
+
+function buttonrefresh() {
+// delete map
+map.off();
+map.remove();
+
+// add the original map again
+map = L.map("map").setView([65.00, 26.00], 5);
+
+//topo map
+// https://wiki.openstreetmap.org/wiki/OpenTopoMap
+L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+attribution: `Kartendaten: © OpenStreetMap-Mitwirkende, SRTM 
+                      | Kartendarstellung: © OpenTopoMap (CC-BY-SA)`
+}).addTo(map);
+
+}
+
+// save weather_stations in the helper variable here
+weather_stations = [];
+
+function button_weather_stations() {
+
+// remove the old layer first, then add new so it wont keep stacking more and more
+map.removeLayer(weather_stations);
+
+var Rovaniemi_station = L.marker([66.56236, 25.83814]).bindPopup("Rovaniemi Airport");
+var Rovaniemi_station_circle = L.circle([66.56236, 25.83814], {
+    weight: 0.5,
+    fillOpacity: 0.1,
+    radius: 70000                
+    });
+var Sodankyla_station = L.marker([67.36663, 26.62901]).bindPopup("Sodankylä Tähtelä");
+var Sodankyla_station_circle = L.circle([67.36663, 26.62901], {
+    weight: 0.5,
+    fillOpacity: 0.1,
+    radius: 70000                
+    });
+var Ivalo_station = L.marker([68.61335, 27.41897]).bindPopup("Inari Ivalo Airport");
+var Ivalo_station_circle = L.circle([68.61335, 27.41897], {
+    weight: 0.5,
+    fillOpacity: 0.1,
+    radius: 70000                
+    }); 
+var Oulu_station = L.marker([64.93503, 25.3392]).bindPopup("Oulu Airport");
+var Oulu_station_circle = L.circle([64.93503, 25.3392], {
+    weight: 0.5,
+    fillOpacity: 0.1,
+    radius: 70000                
+    });
+var Kajaani_station = L.marker([64.2829, 27.67114]).bindPopup("Kajaani Airport");
+var Kajaani_station_circle = L.circle([64.2829, 27.67114], {
+    weight: 0.5,
+    fillOpacity: 0.1,
+    radius: 70000                
+    });
+var Kuopio_station = L.marker([62.99842, 27.80817]).bindPopup("Siilinjärvi" + "<br>" + "Kuopio Airport");
+var Kuopio_station_circle = L.circle([62.99842, 27.80817], {
+    weight: 0.5,
+    fillOpacity: 0.1,
+    radius: 70000                
+    });
+var Jyvaskyla_station = L.marker([62.39758, 25.67087]).bindPopup("Jyväskylä Airport");
+var Jyvaskyla_station_circle = L.circle([62.39758, 25.67087], {
+    weight: 0.5,
+    fillOpacity: 0.1,
+    radius: 70000                
+    });
+var Tampere_station = L.marker([61.41940, 23.62256]).bindPopup("Pirkkala Tampere-Pirkkala" + "<br>" + "Airport");
+var Tampere_station_circle = L.circle([61.41940, 23.62256], {
+    weight: 0.5,
+    fillOpacity: 0.1,
+    radius: 70000                
+    });
+var Helsinki_station = L.marker([60.3267, 24.95675]).bindPopup("Vantaa Helsinki-Vantaa" + "<br>" + "Airport");
+var Helsinki_station_circle = L.circle([60.3267, 24.95675], {
+    weight: 0.5,
+    fillOpacity: 0.1,
+    radius: 70000                
+    });
+
+weather_stations = L.layerGroup([Rovaniemi_station, Sodankyla_station, Ivalo_station, Oulu_station, 
+Kajaani_station, Kuopio_station, Jyvaskyla_station, Tampere_station, Helsinki_station,
+Rovaniemi_station_circle, Sodankyla_station_circle, Ivalo_station_circle, Oulu_station_circle,
+Kajaani_station_circle, Kuopio_station_circle, Jyvaskyla_station_circle, Tampere_station_circle, Helsinki_station_circle]).addTo(map);
+}
+
+// clear weather stations function for "clear weather stations" button
+function buttonclear_stations() {
+    map.removeLayer(weather_stations);
+}
+            </script>
+        </div>
+
+    </body>
+</html>
