@@ -16,10 +16,10 @@
 .col-12 {width: 100%;}
 }
 
-/* Responsiveness for mobile */
+/* Responsiveness for mobile *//*
 [class*="col-"] {
     width: 100%;
-}
+}*/
 
 
 /* Responsiveness for tablet */
@@ -78,8 +78,8 @@ h4 {
 }
 
 #map { 
-    height: 32vh;
-    width: 32vh;
+    height: 700px;
+    width: 100%;
 
 
 }
@@ -126,34 +126,60 @@ margin-bottom: 16%;
 
 
 /* Styling for right side information box */
-.left_1, .left_2, .left_3 {
+.left_1, .left_3 {
     background-color: rgba(44, 76, 59, 0.7);
-            width: 56%;
-            height: auto;
-			padding: 3%;
-			border-radius: 12px;
-			box-shadow: 0 0 10px rgba(0,0,0,0.2);
-			text-align: center;
-			font-size: 24px;
-            margin-top: 12%;
-			margin-left: 0;
-            margin-right: auto;
-            font-size: 25;
+    width: 56%;
+    height: auto;
+	padding: 3%;
+	border-radius: 12px;
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+	text-align: center;
+	font-size: 24px;
+    margin-top: 12%;
+	margin-left: 0;
+    margin-right: auto;
+    font-size: 25;
 
 }
 
-#sdg_values {
+.left_2 {
+
+}
+
+#map_finland{
+    height: auto;
+    width: 70%;
     position: relative;
-    top: -28.5vh;
-    left: 59vh;
+    right: 12%;
+    bottom: 450px;
+    float: left;
+   
+}
+
+/*.class_map_finland {
+    position: relative;
+    bottom: 37vw;
+    right: 5%;
+}*/
+
+#sdg_values {
+    height: auto;
+    width: 60%;
+    position: relative;
+    bottom: 420px;
+    float: right;
+    left: 9%;
 
 }
 
 #berry_chart {
-    width: 40vh;
-    height: 25vh;
+    width: 60%;
+    height: auto;
     position: relative;
-    top: -27vh;
+    bottom: 350px;
+    left: 20%;
+    float: none;
+
 
 }
 
@@ -205,7 +231,6 @@ margin-bottom: 16%;
     margin: 0;
   }
   .user-position {
-    color: black;
     font-size: 18px;
     font-weight: bold;
     margin: 0;
