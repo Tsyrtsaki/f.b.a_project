@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <!-- setup information from: https://leafletjs.com/-->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+        crossorigin=""></script>
+
+        <!-- script for reading the berry_data.json-->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <!-- styling -->
+        <style>
+            h1 {
+                font-family: 'Courier New', monospace;
+                color: rgb(74, 72, 228)
+            }
+
+            #map { 
+                height: 700px;
+                width: 700px;    
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <h1>The Berry Map</h1>
+
+        <!-- the berry data has data between weeks 21-41 and between years 2018-2022 -->
+        <div>
+            <input type="number" id="week" placeholder="Week" min="21" max="41">
+            <input type="number" id="year" placeholder="Year" min="2018" max="2022">
+            
+            <button onclick="buttonsearch()" id="search">Berries</button>
+            <button onclick="buttonsearch_weather()" id="weather_station">Weather Stations</button>
+
+        </div><br>
+
+        <!-- Year search button -->
+        <div>
+            <input type="number" id="year_only" placeholder="Year" min="2018" max="2022">
+            <button onclick="buttonsearch_year()" id="search">Berries</button>
+        </div><br>
+
+        <!-- weather station buttons-->
+        <div>
+            <button onclick="buttonclear_stations()" id="clear_stations">Clear Weather Stations</button>
+        </div><br>
+
+        <!-- refresh the map, (delete and remake) -->
+        <div>
+            <button onclick="buttonrefresh()" id="clear">Refresh Map</button>
+        </div><br>
+    
+        <!-- placeholder for the leaflet map, has Layer OpenTopoMap-->
+        <div id="map"></div>
+
+
+
+        <!-- SCRIPTS -->
+        <script>
+            // coordinates for center of Finland, 5 is the initial zoom level
+            var map = L.map("map").setView([65.00, 26.00], 5);
+
+            
+            //topo map
+            // https://wiki.openstreetmap.org/wiki/OpenTopoMap
+            L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: `Kartendaten: © OpenStreetMap-Mitwirkende, SRTM 
+                                  | Kartendarstellung: © OpenTopoMap (CC-BY-SA)`
+            }).addTo(map);
+
+
+            // json berry_data
+            let berry_data = [];
+            $.getJSON('./berry_data.json', function (data) {
+                berry_data = data;
+            });   
+
+            //json weather data
+            let weather_data = [];
+            $.getJSON('./weather_database_newest3.json', function (data) {
+                weather_data = data;
+
+            }); 
+
+            // MAP MARKER FUNCTIONS
+
+            function map_marker(year, week) {
+            
+            // filter the results by year and week
+            // ref: https://stackoverflow.com/questions/65111615/leaflet-marker-filtering
+
+            let week_year_filter = berry_data.filter(item => {
+            return item.year === year && item.week_number === week
+            });
+
+
+            // save info into variables and "push" markers on the map with selected popuptext
+            // ref: https://harrywood.co.uk/maps/examples/leaflet/marker-array.view.html
+
+            for (var i = 0; i < week_year_filter.length; i++) {
+                var latitude = week_year_filter[i].Latitude;
+                var longitude = week_year_filter[i].Longitude;
+                var main_tree = week_year_filter[i].main_tree_type;
+                var forest_type = week_year_filter[i].forest_development_class;
+                var berry_type = week_year_filter[i].berry;
+                var week = week_year_filter[i].week_number;
+                var year = week_year_filter[i].year;
+                var coordinates = week_year_filter[i].Coordinates;
+
+                var markerLocation = new L.LatLng(latitude, longitude);
+
+                // if condition for different colors for different berries
+
+                if (berry_type == "bilberry") {
+
+                // bilberry = blue, weight: 12 for bigger outline
+                    var marker = new L.circle(markerLocation, {
+                color: "blue",
+                weight: 8,
+                radius: 200               
+                });
+                map.addLayer(marker);
+
+                marker.bindPopup(
+                    "Berry type - "  + berry_type + "<br>" +
+                    "Forest Development Class - " + forest_type + "<br>" +
+                    "Week - " + week + ", " + "Year - " + year + "<br>" +
+                    "Coordinates - " + latitude + ", " + longitude);
+
+                // lingonberry = red
+                } else if (berry_type == "lingonberry") {              
+                    var marker = new L.circle(markerLocation, {
+                color: "red",
+                weight: 8,
+                radius: 250                
+                });
+                map.addLayer(marker);
+
+                marker.bindPopup(
+                    "Berry type - "  + berry_type + "<br>" +
+                    "Forest Development Class - " + forest_type + "<br>" +
+                    "Week - " + week + ", " + "Year - " + year + "<br>" +
+                    "Coordinates - " + latitude + ", " + longitude);
+
+                // cloudberry = orange
+                } else {
+                    var marker = new L.circle(markerLocation, {
+                color: "orange",
+                weight: 8,
+                radius: 300                
+                });
+                map.addLayer(marker);
+
+                marker.bindPopup(
+                    "Berry type - "  + berry_type + "<br>" +
+                    "Forest Development Class - " + forest_type + "<br>" +
+                    "Week - " + week + ", " + "Year - " + year + "<br>" +
+                    "Coordinates - " + latitude + ", " + longitude);
+                }
+            }
+        }
+
+        // FUNCTION TO SHOW ALL BERRIES ON A SINGLE YEAR
+
+        function map_marker_year(year) {
+            
+            // filter the results by year and week
+            // ref: https://stackoverflow.com/questions/65111615/leaflet-marker-filtering
+
+            let week_year_filter = berry_data.filter(item => {
+            return item.year === year 
+            });
+
+
+            // save info into variables and "push" markers on the map with selected popuptext
+            // ref: https://harrywood.co.uk/maps/examples/leaflet/marker-array.view.html
+
+            for (var i = 0; i < week_year_filter.length; i++) {
+                var latitude = week_year_filter[i].Latitude;
+                var longitude = week_year_filter[i].Longitude;
+                var main_tree = week_year_filter[i].main_tree_type;
+                var forest_type = week_year_filter[i].forest_development_class;
+                var berry_type = week_year_filter[i].berry;
+                var week = week_year_filter[i].week_number;
+                var year = week_year_filter[i].year;
+                var coordinates = week_year_filter[i].Coordinates;
+
+                var markerLocation = new L.LatLng(latitude, longitude);
+
+                // if condition for different colors for different berries
+                if (berry_type == "bilberry") {
+
+                // bilberry = blue, weight: 12 for bigger outline
+                    var marker = new L.circle(markerLocation, {
+                color: "blue",
+                weight: 8,
+                radius: 200               
+                });
+                map.addLayer(marker);
+
+                marker.bindPopup(
+                    "Berry type - "  + berry_type + "<br>" +
+                    "Forest Development Class - " + forest_type + "<br>" +
+                    "Week - " + week + ", " + "Year - " + year + "<br>" +
+                    "Coordinates - " + latitude + ", " + longitude);
+
+                // lingonberry = red
+                } else if (berry_type == "lingonberry") {              
+                    var marker = new L.circle(markerLocation, {
+                color: "red",
+                weight: 8,
+                radius: 250                
+                });
+                map.addLayer(marker);
+
+                marker.bindPopup(
+                    "Berry type - "  + berry_type + "<br>" +
+                    "Forest Development Class - " + forest_type + "<br>" +
+                    "Week - " + week + ", " + "Year - " + year + "<br>" +
+                    "Coordinates - " + latitude + ", " + longitude);
+
+                // cloudberry = orange
+                } else {
+                    var marker = new L.circle(markerLocation, {
+                color: "orange",
+                weight: 8,
+                radius: 300                
+                });
+                map.addLayer(marker);
+
+                marker.bindPopup(
+                    "Berry type - "  + berry_type + "<br>" +
+                    "Forest Development Class - " + forest_type + "<br>" +
+                    "Week - " + week + ", " + "Year - " + year + "<br>" +
+                    "Coordinates - " + latitude + ", " + longitude);
+                }
+            }
+        }
+
+        // from Akus exercise 5_2
+        function buttonsearch() {
+            var week = Number(document.getElementById("week").value);
+            var year = Number(document.getElementById("year").value);
+            
+            map_marker(year, week);
+        }
+
+        function buttonsearch_year() {
+            var year = Number(document.getElementById("year_only").value);
+            
+            map_marker_year(year);
+        }
+
+        function buttonsearch_weather() {
+            var week = Number(document.getElementById("week").value);
+            var year = Number(document.getElementById("year").value);
+            
+            weather_stations_markers(year, week);
+        }
+
+        // refresh the map
+        // ref: https://stackoverflow.com/questions/19186428/refresh-leaflet-map-map-container-is-already-initialized
+
+        function buttonrefresh() {
+            // delete map
+            map.off();
+            map.remove();
+            
+            // add the original map again
+            map = L.map("map").setView([65.00, 26.00], 5);
+
+            //topo map
+            // https://wiki.openstreetmap.org/wiki/OpenTopoMap
+            L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: `Kartendaten: © OpenStreetMap-Mitwirkende, SRTM 
+                                  | Kartendarstellung: © OpenTopoMap (CC-BY-SA)`
+            }).addTo(map);
+
+        }
+
+
+
+        // save weather_stations in the helper variable here
+        weather_stations = [];
+
+        function weather_stations_markers(year, week) {
+
+        // remove the old layer first, then add new so it wont keep stacking more and more
+        map.removeLayer(weather_stations);
+
+        // filter the results by year and week
+        // ref: https://stackoverflow.com/questions/65111615/leaflet-marker-filtering
+        let week_year_weather = weather_data.filter(item => {
+        return item.year === year && item.week_number === week
+        });
+
+        // loop through the filtered data and save info into variables
+            for (var i = 0; i < week_year_weather.length; i++) {
+                var rovaniemi_avg = week_year_weather[i].rovaniemi_temperature;
+                var sodankyla_avg = week_year_weather[i].sodankyla_temperature;
+                var ivalo_avg = week_year_weather[i].ivalo_temperature;
+                var oulu_avg = week_year_weather[i].oulu_temperature;
+                var kajaani_avg = week_year_weather[i].kajaani_temperature;
+                var kuopio_avg = week_year_weather[i].kuopio_temperature;
+                var jyvaskyla_avg = week_year_weather[i].jyvaskyla_temperature;
+                var tampere_avg = week_year_weather[i].tampere_temperature;
+                var helsinki_avg = week_year_weather[i].helsinki_temperature;
+                var week_number = week_year_weather[i].week_number;
+                var year_number = week_year_weather[i].year;
+
+            // manually created list of weather stations. Add data into the bindPopup from the filtered data.
+            var Rovaniemi_station = L.marker([66.56236, 25.83814])
+            .bindPopup("Rovaniemi Airport" + "<br>" + " Week - " + week_number + " Year - " + year + "<br>" + " Average temperature - " + rovaniemi_avg);
+            var Rovaniemi_station_circle = L.circle([66.56236, 25.83814], {
+                weight: 0.5,
+                fillOpacity: 0.1,
+                radius: 70000                
+                });
+            var Sodankyla_station = L.marker([67.36663, 26.62901])
+            .bindPopup("Sodankylä Tähtelä" + "<br>" + " Week - " + week_number + " Year - " + year + "<br>" + " Average temperature - " + sodankyla_avg);
+            var Sodankyla_station_circle = L.circle([67.36663, 26.62901], {
+                weight: 0.5,
+                fillOpacity: 0.1,
+                radius: 70000                
+                });
+            var Ivalo_station = L.marker([68.61335, 27.41897])
+            .bindPopup("Inari Ivalo Airport" + "<br>" + " Week - " + week_number + " Year - " + year + "<br>" + " Average temperature - " + ivalo_avg);
+            var Ivalo_station_circle = L.circle([68.61335, 27.41897], {
+                weight: 0.5,
+                fillOpacity: 0.1,
+                radius: 70000                
+                }); 
+            var Oulu_station = L.marker([64.93503, 25.3392])
+            .bindPopup("Oulu Airport" + "<br>" + " Week - " + week_number + " Year - " + year + "<br>" + " Average temperature - " + oulu_avg);
+            var Oulu_station_circle = L.circle([64.93503, 25.3392], {
+                weight: 0.5,
+                fillOpacity: 0.1,
+                radius: 70000                
+                });
+            var Kajaani_station = L.marker([64.2829, 27.67114])
+            .bindPopup("Kajaani Airport" + "<br>" + " Week - " + week_number + " Year - " + year + "<br>" + " Average temperature - " + kajaani_avg);
+            var Kajaani_station_circle = L.circle([64.2829, 27.67114], {
+                weight: 0.5,
+                fillOpacity: 0.1,
+                radius: 70000                
+                });
+            var Kuopio_station = L.marker([62.99842, 27.80817])
+            .bindPopup("Siilinjärvi" + "<br>" + "Kuopio Airport" + "<br>" + " Week - " + week_number + " Year - " + year + "<br>" + " Average temperature - " + kuopio_avg);
+            var Kuopio_station_circle = L.circle([62.99842, 27.80817], {
+                weight: 0.5,
+                fillOpacity: 0.1,
+                radius: 70000                
+                });
+            var Jyvaskyla_station = L.marker([62.39758, 25.67087])
+            .bindPopup("Jyväskylä Airport" + "<br>" + " Week - " + week_number + " Year - " + year + "<br>" + " Average temperature - " + jyvaskyla_avg);
+            var Jyvaskyla_station_circle = L.circle([62.39758, 25.67087], {
+                weight: 0.5,
+                fillOpacity: 0.1,
+                radius: 70000                
+                });
+            var Tampere_station = L.marker([61.41940, 23.62256])
+            .bindPopup("Pirkkala Tampere-Pirkkala" + "<br>" + "Airport" + "<br>" + " Week - " + week_number + " Year - " + year + "<br>" + " Average temperature - " + tampere_avg);
+            var Tampere_station_circle = L.circle([61.41940, 23.62256], {
+                weight: 0.5,
+                fillOpacity: 0.1,
+                radius: 70000                
+                });
+            var Helsinki_station = L.marker([60.3267, 24.95675])
+            .bindPopup("Vantaa Helsinki-Vantaa" + "<br>" + "Airport" + "<br>" + " Week - " + week_number + " Year - " + year + "<br>" + " Average temperature - " + helsinki_avg);
+            var Helsinki_station_circle = L.circle([60.3267, 24.95675], {
+                weight: 0.5,
+                fillOpacity: 0.1,
+                radius: 70000                
+                });
+            
+            // save all the markers into a L.layerGroup. This can be used then to delete the same markers as the weather_stations updates into helper variable.
+            weather_stations = L.layerGroup([Rovaniemi_station, Sodankyla_station, Ivalo_station, Oulu_station, 
+            Kajaani_station, Kuopio_station, Jyvaskyla_station, Tampere_station, Helsinki_station,
+            Rovaniemi_station_circle, Sodankyla_station_circle, Ivalo_station_circle, Oulu_station_circle,
+            Kajaani_station_circle, Kuopio_station_circle, Jyvaskyla_station_circle, Tampere_station_circle, Helsinki_station_circle]).addTo(map);
+            }
+        }
+
+            // clear weather stations function for "clear weather stations" button
+            function buttonclear_stations() {
+                map.removeLayer(weather_stations);
+            }
+            
+        </script>
+
+    </body>
+
+</html>
