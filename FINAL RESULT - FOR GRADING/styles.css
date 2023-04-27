@@ -1,0 +1,300 @@
+/* Responsiveness for mobile */
+[class*="col-"] {
+    width: 100%;
+}
+
+/* Responsiveness for tablet */
+@media only screen and (min-width:
+600px) {
+.col-s-1 {width: 8.33%;}
+.col-s-2 {width: 16.66%;}
+.col-s-3 {width: 25%;}
+.col-s-4 {width: 33.33%;}
+.col-s-5 {width: 41.66%;}
+.col-s-6 {width: 50%;}
+.col-s-7 {width: 58.33%;}
+.col-s-8 {width: 66.66%;}
+.col-s-9 {width: 75%;}
+.col-s-10 {width: 83.33%;}
+.col-s-11 {width: 91.66%;}
+.col-s-12 {width: 100%;}
+}
+
+/* Responsiveness for desktop */
+@media only screen and (min-width:
+768px) {
+.col-1 {width: 8.33%;}
+.col-2 {width: 16.66%;}
+.col-3 {width: 25%;}
+.col-4 {width: 33.33%;}
+.col-5 {width: 41.66%;}
+.col-6 {width: 50%;}
+.col-7 {width: 58.33%;}
+.col-8 {width: 66.66%;}
+.col-9 {width: 75%;}
+.col-10 {width: 83.33%;}
+.col-11 {width: 91.66%;}
+.col-12 {width: 100%;}
+}
+
+
+.row::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.row {
+    vertical-align: middle;
+    height: auto;
+    line-height: 35px;
+}
+
+* {
+    box-sizing: border-box;
+
+}
+
+
+body {
+    background: url(Forest_HD.jpg);
+    background-size: cover;
+    width: 100%;
+    height: auto;
+}
+
+h1 {
+    font-family: 'Arial';
+    color: #fff
+}
+
+p {
+    width: 150%;
+    font-family: 'Arial';
+    color: #fff
+
+}
+
+h4 {
+    font-size: 45px;
+    color: #fff;
+
+}
+
+/* Styling for main banner of website */
+.banner {
+    background-color: rgba(44, 76, 59, 0.7);
+    text-align: center;
+    margin-top: 11.5%;
+    margin-bottom: 50%;
+    position: relative;
+    font-size: 55px;
+    color: black;
+    width: 100%;
+    height: auto;
+    padding: 3%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+#map { 
+    height: 700px;
+    width: 100%;
+}
+
+.berry_map {
+    text-align: center;
+    align-items: stretch;
+    margin-right: auto;
+    margin-right: 0;
+
+}
+
+#map_fieldset {
+border-radius: 1em;
+background-color: rgba(44, 76, 59, 0.7);
+border: 0;
+max-width: 60%;
+padding: 2%;
+margin-left: 20.65%;
+margin-right: 22%;
+margin-top: 12%;
+padding-top: 0%;
+margin-bottom: 16%;
+}
+
+
+/* Styling for left side information box */
+.right_1, .right_3 {
+    background-color: rgba(44, 76, 59, 0.7);
+    width: 56%;
+    height: auto;
+	padding: 3%;
+	border-radius: 12px;
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    text-align: center;
+	font-size: 24px;
+    margin-top: 12%;
+	margin-left: auto;
+    margin-right: 0;
+    font-size: 25;
+}
+
+.right_2 {
+    background-color: rgba(44, 76, 59, 0.7);
+    width: 56%;
+    height: auto;
+	padding: 3%;
+	border-radius: 12px;
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    text-align: center;
+	font-size: 24px;
+    margin-top: 12%;
+	margin-left: auto;
+    margin-right: 0;
+    font-size: 25;
+}
+
+/* Styling for right side information box */
+.left_1, .left_2, .left_3 {
+    background-color: rgba(44, 76, 59, 0.7);
+    width: 56%;
+    height: auto;
+	padding: 3%;
+	border-radius: 12px;
+	box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    text-align: center;
+	font-size: 24px;
+    margin-top: 12%;
+	margin-left: 0;
+    margin-right: auto;
+    font-size: 25;
+    break-before: always;
+
+}
+
+#map_finland{
+    height: auto;
+    width: 250%;
+    max-width: 1000px;
+    position: relative;
+    right: 40%;
+    bottom: 50vw;
+    float: left;
+}
+
+@media screen and (max-width: 600px) {
+    .right_2 {
+      order: 1;
+    }
+    #map_finland {
+      order: -1;
+    }
+  }
+
+/*.class_map_finland {
+    position: relative;
+    bottom: 37vw;
+    right: 5%;
+}*/
+
+#sdg_values {
+    height: auto;
+    width: 60%;
+    position: relative;
+    bottom: 470px;
+    float: right;
+    left: 9%;
+
+}
+
+#berry_chart {
+    width: 65%;
+    max-width: 700px;
+    height: auto;
+    position: relative;
+    bottom: 42vw;
+    left: 22%;
+}
+
+#graph_image {
+    width: 105%;
+    max-width: 700px;
+    height: auto;
+    position: relative;
+    bottom: 39vw;
+    left: 22%;
+    float: left;
+}
+
+.user-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .user-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color:#455b55;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    width: 200px;
+    max-width: 400px;
+  }
+  
+  .user-image {
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+    position: relative;
+  }
+  
+  .user-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+  
+  .user-info {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .user-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+  }
+  .user-position {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  .user-quote {
+    font-size: 15px;
+    margin: 0;
+  }
+
+  .references_box {
+    background-color: rgba(44, 76, 59, 0.7);
+    text-align: center;
+    margin-top: 1%;
+    top: 12vw;
+    position: relative;
+    font-size: 55px;
+    color: black;
+    width: 100%;
+    height: auto;
+    padding: 0.5%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+  
